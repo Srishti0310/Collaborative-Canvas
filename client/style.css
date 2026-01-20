@@ -1,0 +1,159 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+/* Canvas full screen (like  a sheet) */
+#board {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100vw - 80px);
+  height: calc(100vh - 130px);
+
+  background: white;
+
+  border-radius: 18px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+
+  /* dotted grid */
+  background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Left tools panel */
+#toolsPanel {
+  position: fixed;
+  top: 76px;
+  left: 16px;
+  width: 260px;
+  z-index: 50;
+  border-radius: 14px;
+}
+
+/* Right users panel */
+#usersPanel {
+  position: fixed;
+  top: 76px;
+  right: 16px;
+  width: 240px;
+  z-index: 50;
+  border-radius: 14px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+.activeTool {
+  background: black !important;
+  color: white !important;
+}
+
+/* Online user list items */
+.userItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* palette buttons */
+.palette-color {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+
+.palette-color:hover {
+  transform: scale(1.06);
+}
+
+.palette-color.active {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+/* #colorPalette {
+  max-height: 110px;
+  overflow-y: auto;
+  padding-right: 4px;
+} */
+
+.draggable {
+  user-select: none;
+  touch-action: none; /* better dragging on touch devices */
+}
+.titleBig {
+  font-size: 34px;
+  letter-spacing: 0.8px;
+}
+
+body {
+  background: #f3f4f6;
+}
+
+/* make canvas look like sheet */
+#board {
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+#statusBar {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  display: flex;
+  gap: 18px;
+  z-index: 60;
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+}
+
+#toolsPanel,
+#usersPanel {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+#toolsPanel:hover,
+#usersPanel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15) !important;
+}
+
+.toast {
+  border-radius: 14px !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+#brushCursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border: 2px solid black;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  display: none;
+  opacity: 0.9;
+}
