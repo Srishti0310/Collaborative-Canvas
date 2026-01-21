@@ -1,10 +1,11 @@
 import { connectSocket } from "./websocket.js";
 import { createCanvasEngine } from "./canvas.js";
-import { makeDraggable } from "./draggable.js";
 
-console.log("main.js loaded");
+console.log("✅ main.js loaded");
 
+// ---------------------------
 // DOM Elements
+// ---------------------------
 const canvas = document.getElementById("board");
 const statusFPS = document.getElementById("statusFPS");
 
@@ -21,125 +22,38 @@ const widthValue = document.getElementById("widthValue");
 const undoBtn = document.getElementById("undoBtn");
 const redoBtn = document.getElementById("redoBtn");
 
+// users list (NOTE: only if you still have usersList in HTML)
 const usersList = document.getElementById("usersList");
 
-//  Palette DOM
+// Online count in navbar
+const onlineCount = document.getElementById("onlineCount");
+
+// palette dom
 const colorPalette = document.getElementById("colorPalette");
 const selectedColorPreview = document.getElementById("selectedColorPreview");
 
-// Status bar DOM
+// status bar dom
 const statusLeft = document.getElementById("statusLeft");
 const statusCenter = document.getElementById("statusCenter");
 const statusRight = document.getElementById("statusRight");
 
-// Toast DOM
+// toast dom
 const appToastEl = document.getElementById("appToast");
 const toastBodyEl = document.getElementById("toastBody");
 
-// Brush cursor preview DOM
+// brush cursor
 const brushCursor = document.getElementById("brushCursor");
 
-// Draggable panels
-const toolsPanel = document.getElementById("toolsPanel");
-const usersPanel = document.getElementById("usersPanel");
-makeDraggable(toolsPanel);
-makeDraggable(usersPanel);
-
-// Canvas + Socket
-
-const engine = createCanvasEngine(canvas);
-engine.setCanDraw(() => joined);
-
-const { socket, emitJoin } = connectSocket();
-
-let joined = false;
-let lastUsers = [];
-
-// Preset Palette Colors
-
-const PALETTE_COLORS = [
-  // Neutrals
-  "#000000",
-  "#1f2937",
-  "#4b5563",
-  "#9ca3af",
-  "#e5e7eb",
-  "#ffffff",
-
-  // Reds / Pinks
-  "#ef4444",
-  "#dc2626",
-  "#f43f5e",
-  "#be123c",
-  "#fb7185",
-  "#fecdd3",
-
-  // Oranges / Yellows
-  "#f97316",
-  "#ea580c",
-  "#f59e0b",
-  "#d97706",
-  "#eab308",
-  "#fde047",
-  "#fef08a",
-
-  // Greens
-  "#22c55e",
-  "#16a34a",
-  "#15803d",
-  "#4ade80",
-  "#bbf7d0",
-
-  // Teals / Cyans
-  "#14b8a6",
-  "#0d9488",
-  "#06b6d4",
-  "#0891b2",
-  "#67e8f9",
-
-  // Blues
-  "#3b82f6",
-  "#2563eb",
-  "#1d4ed8",
-  "#60a5fa",
-  "#bfdbfe",
-
-  // Purples
-  "#8b5cf6",
-  "#7c3aed",
-  "#6d28d9",
-  "#a78bfa",
-  "#ddd6fe",
-
-  // Browns / Extras
-  "#92400e",
-  "#a16207",
-  "#854d0e",
-
-  // Fun colors
-  "#10b981",
-  "#84cc16",
-  "#f472b6",
-  "#c026d3",
-];
-
+// ---------------------------
 // Helpers
-
+// ---------------------------
 function getRoomId() {
   const params = new URLSearchParams(window.location.search);
   return params.get("room") || "global";
 }
 const roomId = getRoomId();
 
-emitJoin(name, roomId);
-
-function setActiveTool(button) {
-  brushBtn.classList.remove("activeTool");
-  eraserBtn.classList.remove("activeTool");
-  button.classList.add("activeTool");
-}
-
-// Toast helper
+// toast helper
 function showToast(message) {
   if (!appToastEl || !toastBodyEl) return;
   toastBodyEl.textContent = message;
@@ -147,7 +61,12 @@ function showToast(message) {
   toast.show();
 }
 
-// Status helper
+function setActiveTool(button) {
+  brushBtn.classList.remove("activeTool");
+  eraserBtn.classList.remove("activeTool");
+  button.classList.add("activeTool");
+}
+
 function updateStatus() {
   if (!statusCenter) return;
 
@@ -160,12 +79,45 @@ function updateStatus() {
   statusCenter.textContent = `Tool: ${toolName} | Width: ${width} | Color: ${color}`;
 }
 
-// Brush Cursor Preview Logic
+// ---------------------------
+// Canvas + Socket
+// ---------------------------
+const engine = createCanvasEngine(canvas);
+const { socket, emitJoin } = connectSocket();
 
+let joined = false;
+
+// allow draw only after join
+engine.setCanDraw(() => joined);
+
+// ---------------------------
+// Palette Colors (no scroll)
+// ---------------------------
+const PALETTE_COLORS = [
+  "#000000", // black
+  "#ffffff", // white
+  "#6b7280", // gray
+  "#ef4444", // red
+  "#f97316", // orange
+  "#f59e0b", // amber
+  "#fde047", // yellow
+  "#22c55e", // green
+  "#14b8a6", // teal
+  "#06b6d4", // cyan
+  "#3b82f6", // blue
+  "#2563eb", // deep blue
+  "#8b5cf6", // purple
+  "#ec4899", // pink
+  "#a16207", // brown
+];
+
+// ---------------------------
+// Brush cursor preview logic
+// ---------------------------
 function updateBrushCursorStyle() {
   if (!brushCursor) return;
 
-  const width = Number(widthSlider.value || 6);
+  const width = Number(widthSlider?.value || 6);
 
   brushCursor.style.width = `${width}px`;
   brushCursor.style.height = `${width}px`;
@@ -184,7 +136,7 @@ window.addEventListener("pointermove", (e) => {
   brushCursor.style.top = `${e.clientY}px`;
 });
 
-// show/hide cursor on canvas enter/leave
+// show/hide cursor when entering canvas
 canvas.addEventListener("pointerenter", () => {
   if (!brushCursor) return;
   brushCursor.style.display = "block";
@@ -197,7 +149,6 @@ canvas.addEventListener("pointerleave", () => {
   canvas.style.cursor = "default";
 });
 
-// animation while drawing
 canvas.addEventListener("pointerdown", () => {
   if (!brushCursor) return;
   brushCursor.style.transform = "translate(-50%, -50%) scale(0.85)";
@@ -213,8 +164,9 @@ canvas.addEventListener("pointercancel", () => {
   brushCursor.style.transform = "translate(-50%, -50%) scale(1)";
 });
 
+// ---------------------------
 // Palette logic
-
+// ---------------------------
 let selectedColor = colorPicker?.value || "#111111";
 
 function updateSelectedColorUI(color) {
@@ -245,31 +197,34 @@ function renderPalette() {
     swatch.dataset.color = c;
     swatch.style.background = c;
 
-    // white border visible
     if (c.toLowerCase() === "#ffffff") {
       swatch.style.border = "1px solid rgba(0,0,0,0.35)";
     }
 
     swatch.title = c;
     swatch.addEventListener("click", () => updateSelectedColorUI(c));
+
     colorPalette.appendChild(swatch);
   }
 
   updateSelectedColorUI(selectedColor);
 }
 
-// render palette
+// render palette on load
 renderPalette();
 updateBrushCursorStyle();
 updateStatus();
 
-// UI Events
-
+// ---------------------------
+// UI events
+// ---------------------------
 joinBtn.addEventListener("click", () => {
   if (joined) return;
 
   const name = nameInput.value.trim() || "Anonymous";
-  emitJoin(name);
+
+  // ✅ join room
+  emitJoin(name, roomId);
 
   joined = true;
   joinBtn.disabled = true;
@@ -279,7 +234,6 @@ joinBtn.addEventListener("click", () => {
 brushBtn.addEventListener("click", () => {
   engine.setTool("brush");
   setActiveTool(brushBtn);
-
   updateBrushCursorStyle();
   updateStatus();
 });
@@ -287,7 +241,6 @@ brushBtn.addEventListener("click", () => {
 eraserBtn.addEventListener("click", () => {
   engine.setTool("eraser");
   setActiveTool(eraserBtn);
-
   updateBrushCursorStyle();
   updateStatus();
 });
@@ -300,7 +253,6 @@ widthSlider.addEventListener("input", (e) => {
   const v = Number(e.target.value);
   widthValue.textContent = v;
   engine.setWidth(v);
-
   updateBrushCursorStyle();
   updateStatus();
 });
@@ -308,7 +260,7 @@ widthSlider.addEventListener("input", (e) => {
 undoBtn.addEventListener("click", () => socket.emit("history:undo"));
 redoBtn.addEventListener("click", () => socket.emit("history:redo"));
 
-// Keyboard shortcuts (Ctrl/Cmd)
+// keyboard shortcuts
 window.addEventListener("keydown", (e) => {
   const isMac = navigator.platform.toUpperCase().includes("MAC");
   const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
@@ -326,8 +278,9 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-// Canvas pointer events -> WebSocket
-
+// ---------------------------
+// Canvas pointer events -> socket
+// ---------------------------
 engine.bindPointerHandlers({
   onStrokeStart: (payload) => {
     if (!joined) return showToast("⚠️ Please click Join first");
@@ -347,18 +300,17 @@ engine.bindPointerHandlers({
   },
 });
 
+// ---------------------------
 // Socket listeners
+// ---------------------------
 socket.on("connect", () => {
   if (statusLeft) statusLeft.textContent = "🟢 Connected";
-  showToast("🟢 Connected");
 });
 
 socket.on("disconnect", () => {
   if (statusLeft) statusLeft.textContent = "🔴 Disconnected";
-  showToast("🔴 Disconnected. Trying to reconnect...");
 });
 
-// toasts from server
 socket.on("toast:event", ({ type, user }) => {
   if (type === "join") showToast(`✅ ${user} joined`);
   if (type === "leave") showToast(`👋 ${user} left`);
@@ -384,12 +336,20 @@ socket.on("canvas:state", ({ strokes }) => {
   engine.replayStrokes(strokes);
 });
 
+// ---------------------------
 // Users UI
+// ---------------------------
 function renderUsers(users) {
-  usersList.innerHTML = "";
-  lastUsers = users;
+  // update navbar count
+  if (onlineCount) onlineCount.textContent = users.length;
 
+  // update bottom status
   if (statusRight) statusRight.textContent = `Users: ${users.length}`;
+
+  // if users list exists
+  if (!usersList) return;
+
+  usersList.innerHTML = "";
 
   for (const u of users) {
     const li = document.createElement("li");
@@ -406,22 +366,23 @@ function renderUsers(users) {
   }
 }
 
+// ---------------------------
+// FPS loop
+// ---------------------------
 let lastFrameTime = performance.now();
 let frameCount = 0;
-let fps = 0;
 
 function fpsLoop() {
   frameCount++;
   const now = performance.now();
 
   if (now - lastFrameTime >= 1000) {
-    fps = frameCount;
+    if (statusFPS) statusFPS.textContent = `FPS: ${frameCount}`;
     frameCount = 0;
     lastFrameTime = now;
-
-    if (statusFPS) statusFPS.textContent = `FPS: ${fps}`;
   }
 
   requestAnimationFrame(fpsLoop);
 }
+
 fpsLoop();

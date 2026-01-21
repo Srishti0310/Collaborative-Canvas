@@ -1,143 +1,290 @@
+/* ---------------------------
+  Global reset
+--------------------------- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   overflow: hidden;
   background: #f3f4f6;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Arial,
+    sans-serif;
 }
 
-/* Canvas full screen (like  a sheet) */
-#board {
-  position: fixed;
-  top: 76px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100vw - 80px);
-  height: calc(100vh - 130px);
-
-  background: white;
-
-  border-radius: 18px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
-
-  /* dotted grid */
-  background-image: radial-gradient(#d1d5db 1px, transparent 1px);
-  background-size: 22px 22px;
-}
-
-/* Left tools panel */
-#toolsPanel {
-  position: fixed;
-  top: 76px;
-  left: 16px;
-  width: 260px;
-  z-index: 50;
-  border-radius: 14px;
-}
-
-/* Right users panel */
-#usersPanel {
-  position: fixed;
-  top: 76px;
-  right: 16px;
-  width: 240px;
-  z-index: 50;
-  border-radius: 14px;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
-}
-
-.activeTool {
-  background: black !important;
-  color: white !important;
-}
-
-/* Online user list items */
-.userItem {
+/* ---------------------------
+  Title + Navbar
+--------------------------- */
+.appTitle {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+.appTitleText {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: 0.4px;
+
+  background: linear-gradient(90deg, #111827, #2563eb);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-/* palette buttons */
+/* ---------------------------
+  Join (right side)
+--------------------------- */
+.joinBox {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.joinInput {
+  width: 210px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  outline: none;
+}
+
+.joinInput:focus {
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.joinBtn {
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border: none;
+  color: white;
+
+  background: linear-gradient(90deg, #111827, #2563eb);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.15s ease;
+}
+
+.joinBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.35);
+}
+
+/* ---------------------------
+  Top toolbar
+--------------------------- */
+#topToolbar {
+  position: sticky;
+  top: 56px; /* bootstrap navbar height */
+  z-index: 1000;
+
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(10px);
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+#toolbarRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.toolbarLeft,
+.toolbarCenter,
+.toolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* keep center from breaking layout */
+.toolbarCenter {
+  flex: 1;
+  justify-content: center;
+  min-width: 420px;
+}
+
+.toolbarLabel {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: #374151;
+  text-transform: uppercase;
+}
+
+/* active tool button */
+.activeTool {
+  background: #111 !important;
+  color: white !important;
+}
+
+.toolBtnWide {
+  min-width: 105px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Online button on far LEFT */
+.onlineBtn {
+  border-radius: 999px;
+  font-weight: 700;
+  padding: 6px 12px;
+}
+
+/* Width slider */
+.toolbarWidth {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.widthRange {
+  width: 160px;
+}
+
+/* ---------------------------
+  Palette (NO scroll)
+--------------------------- */
+.paletteRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .palette-color {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 22px;
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
   cursor: pointer;
-  transition: transform 0.08s ease;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.12s ease;
 }
 
 .palette-color:hover {
-  transform: scale(1.06);
+  transform: scale(1.08);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
 }
 
 .palette-color.active {
-  outline: 2px solid #000;
+  outline: 3px solid #111;
   outline-offset: 2px;
 }
-/* #colorPalette {
-  max-height: 110px;
-  overflow-y: auto;
-  padding-right: 4px;
-} */
 
-.draggable {
-  user-select: none;
-  touch-action: none; /* better dragging on touch devices */
-}
-.titleBig {
-  font-size: 34px;
-  letter-spacing: 0.8px;
+/* Selected preview */
+.selectedPreview {
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  border: 2px solid rgba(0, 0, 0, 0.15);
 }
 
-body {
-  background: #f3f4f6;
+/* Custom picker bigger */
+.colorPickerBig {
+  width: 44px !important;
+  height: 34px !important;
+  padding: 0 !important;
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
 }
 
-/* make canvas look like sheet */
+/* ---------------------------
+  Canvas (bigger + top border visible)
+--------------------------- */
 #board {
-  background: white;
-  border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-}
-
-#statusBar {
   position: fixed;
-  bottom: 14px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 10px 16px;
+
+  /* ✅ more spacing so toolbar doesn't overlap */
+  top: calc(56px + 64px + 14px);
+
+  /* ✅ bigger canvas area */
+  width: calc(100vw - 24px);
+  height: calc(100vh - 56px - 64px - 14px - 64px);
+
+  background: white;
+  border-radius: 22px;
+
+  /* ✅ strong visible border */
+  border: 3px solid rgba(0, 0, 0, 0.18);
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.9),
+    0 18px 50px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------------------------
+  Status bar (bottom)
+--------------------------- */
+#statusBar {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  padding: 8px 14px;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid #e5e7eb;
   border-radius: 14px;
   display: flex;
   gap: 18px;
   z-index: 60;
+
   backdrop-filter: blur(10px);
   font-size: 13px;
+
+  height: 42px;
+  align-items: center;
 }
 
-#toolsPanel,
-#usersPanel {
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+/* ---------------------------
+  FPS badge (bottom right)
+--------------------------- */
+#statusFPS {
+  position: fixed;
+  bottom: 62px;
+  right: 18px;
+
+  font-size: 12px;
+  font-weight: 700;
+  color: #111;
+  z-index: 2000;
+
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 5px 10px;
+
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
 }
 
-#toolsPanel:hover,
-#usersPanel:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15) !important;
+/* ---------------------------
+  Toast (prevents overlap with join)
+--------------------------- */
+#toastContainer {
+  top: 130px; /* ✅ below navbar + toolbar */
+  right: 18px;
+  z-index: 9999;
 }
 
 .toast {
@@ -145,6 +292,9 @@ body {
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
 }
 
+/* ---------------------------
+  Brush cursor
+--------------------------- */
 #brushCursor {
   position: fixed;
   width: 20px;
@@ -156,4 +306,13 @@ body {
   transform: translate(-50%, -50%);
   display: none;
   opacity: 0.9;
+}
+
+.actionBtn {
+  border-radius: 12px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
 }
